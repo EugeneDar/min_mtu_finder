@@ -26,19 +26,23 @@ def validate_address(address):
     return all(allowed.match(x) for x in address.split("."))
 
 
-def ping(address, data_size):
-    result = subprocess.run(
-        ["ping", "-4", "-M", "do", "-s", str(data_size), "-c", "1", "-n", address],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    return str(result.stdout), str(result.stderr), result.returncode
+# def ping(address, data_size):
+#     result = subprocess.run(
+#         ["ping", "-4", "-M", "do", "-s", str(data_size), "-c", "1", "-n", address],
+#         stdout=subprocess.PIPE,
+#         stderr=subprocess.PIPE,
+#         text=True
+#     )
+#     return str(result.stdout), str(result.stderr), result.returncode
 
 
 def is_host_up(address):
     try:
-        subprocess.check_output(["ping", "-c", "1", address], stderr=subprocess.STDOUT)
+        if platform.system().lower() == 'windows':
+            command = ['ping', '-n', '1', address]
+        else:
+            command = ["ping", "-c", "1", address]
+        subprocess.check_output(command, stderr=subprocess.STDOUT)
         return True
     except subprocess.CalledProcessError:
         return False
